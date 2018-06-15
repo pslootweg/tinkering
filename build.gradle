@@ -1,0 +1,83 @@
+group 'uk.slootweg'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'http://oss.jfrog.org/artifactory/repo' }
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2/' }
+
+    }
+    dependencies {
+        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.10'
+        classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
+        classpath 'pl.allegro.tech.build:axion-release-plugin:1.8.1'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'net.linguica.maven-settings'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'pl.allegro.tech.build.axion-release'
+
+scmVersion {
+    branchVersionIncrementer = [
+            'release/.*' : 'incrementMajor',
+            'feature/.*' : 'incrementMinor',
+            'bugfix/.*' : 'incrementPatch',
+            'hotfix/.*' : 'incrementPatch'
+    ]
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    version = scmVersion.version
+    group = 'uk.slootweg'
+}
+
+
+subprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url 'http://oss.jfrog.org/artifactory/repo' }
+        maven {
+            name 'nexus'
+            url 'https://nexus.adaptavist.com/content/repositories/adaptavist'
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.deprecation = true
+        options.encoding = 'UTF-8'
+        options.compilerArgs << '-Xlint:unchecked'
+    }
+}
+
+idea {
+    project {
+        jdkName '1.8'
+        languageLevel '1.8'
+        vcs = 'Git'
+    }
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+
