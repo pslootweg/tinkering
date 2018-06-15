@@ -28,6 +28,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'pl.allegro.tech.build.axion-release'
 
 scmVersion {
+    ignoreUncommittedChanges = false
     branchVersionIncrementer = [
             'release/.*' : 'incrementMajor',
             'feature/.*' : 'incrementMinor',
